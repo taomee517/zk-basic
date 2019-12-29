@@ -1,6 +1,6 @@
-package com.demo.zk;
+package com.demo.zk.apicase;
 
-import com.demo.zk.callback.ZkCallback;
+import com.demo.zk.callback.ZkVoidCallback;
 import com.demo.zk.watcher.ZkWathcer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
@@ -18,10 +18,14 @@ import java.util.concurrent.CountDownLatch;
  */
 
 @Slf4j
-public class ZkAsyncConnect {
+public class ZkNodeAsyncDelete {
     private static final String ZK_ADDR = "127.0.0.1:2181";
-    private static final String PREFIX_ASYNC = "/zktest-async-create-";
+    private static final String PREFIX_DELETE = "/asyncDeleteTest";
 
+    /**
+     * 如果节点下有子节点，不能直接删除，必须在删除子节点后才能删除
+     * @param args
+     */
     public static void main(String[] args) {
         try {
             CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -29,12 +33,13 @@ public class ZkAsyncConnect {
             log.info("zk连接状态：{}",zk.getState());
             countDownLatch.await();
             log.info("zk连接创建成功！");
-            zk.create(PREFIX_ASYNC, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL,
-                    new ZkCallback(), "my test text...1");
-            zk.create(PREFIX_ASYNC, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL,
-                    new ZkCallback(), "my test text...2");
-            zk.create(PREFIX_ASYNC, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL,
-                    new ZkCallback(), "my test text...3");
+            zk.create(PREFIX_DELETE, "parentNode".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            zk.create(PREFIX_DELETE + "/child", "childNode".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+
+            zk.delete(PREFIX_DELETE,-1, new ZkVoidCallback(),"parent delete");
+            zk.delete(PREFIX_DELETE + "/child",-1, new ZkVoidCallback(),"child delete");
+            zk.delete(PREFIX_DELETE,-1, new ZkVoidCallback(),"parent delete");
+            log.info("success to delete node {}",PREFIX_DELETE);
             Thread.sleep(Integer.MAX_VALUE);
         } catch (Exception e) {
             log.error("创建zk连接发生异常：{}",e);

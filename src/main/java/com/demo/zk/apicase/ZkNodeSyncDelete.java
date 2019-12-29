@@ -1,9 +1,10 @@
-package com.demo.zk;
+package com.demo.zk.apicase;
 
-import com.demo.zk.callback.ZkVoidCallback;
+import com.demo.zk.callback.ZkCallback;
 import com.demo.zk.watcher.ZkWathcer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
@@ -18,9 +19,9 @@ import java.util.concurrent.CountDownLatch;
  */
 
 @Slf4j
-public class ZkNodeAsyncDelete {
+public class ZkNodeSyncDelete {
     private static final String ZK_ADDR = "127.0.0.1:2181";
-    private static final String PREFIX_DELETE = "/asyncDeleteTest";
+    private static final String PREFIX_DELETE = "/deleteTest";
 
     /**
      * 如果节点下有子节点，不能直接删除，必须在删除子节点后才能删除
@@ -35,10 +36,14 @@ public class ZkNodeAsyncDelete {
             log.info("zk连接创建成功！");
             zk.create(PREFIX_DELETE, "parentNode".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             zk.create(PREFIX_DELETE + "/child", "childNode".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-
-            zk.delete(PREFIX_DELETE,-1, new ZkVoidCallback(),"parent delete");
-            zk.delete(PREFIX_DELETE + "/child",-1, new ZkVoidCallback(),"child delete");
-            zk.delete(PREFIX_DELETE,-1, new ZkVoidCallback(),"parent delete");
+            try {
+                zk.delete(PREFIX_DELETE,-1);
+            } catch (Exception e) {
+                log.info("删除节点{}失败：{}",PREFIX_DELETE,e);
+            }
+            zk.delete(PREFIX_DELETE + "/child",-1);
+            log.info("success to delete node /child");
+            zk.delete(PREFIX_DELETE,-1);
             log.info("success to delete node {}",PREFIX_DELETE);
             Thread.sleep(Integer.MAX_VALUE);
         } catch (Exception e) {

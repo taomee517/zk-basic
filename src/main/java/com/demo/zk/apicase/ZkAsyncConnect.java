@@ -1,5 +1,6 @@
-package com.demo.zk;
+package com.demo.zk.apicase;
 
+import com.demo.zk.callback.ZkCallback;
 import com.demo.zk.watcher.ZkWathcer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
@@ -17,21 +18,24 @@ import java.util.concurrent.CountDownLatch;
  */
 
 @Slf4j
-public class ZkSyncConnect {
+public class ZkAsyncConnect {
     private static final String ZK_ADDR = "127.0.0.1:2181";
-    private static final String PREFIX = "/zktest-sync-create-";
+    private static final String PREFIX_ASYNC = "/zktest-async-create-";
 
     public static void main(String[] args) {
         try {
             CountDownLatch countDownLatch = new CountDownLatch(1);
             ZooKeeper zk = new ZooKeeper(ZK_ADDR,5000,new ZkWathcer(countDownLatch));
+            log.info("zk连接状态：{}",zk.getState());
             countDownLatch.await();
             log.info("zk连接创建成功！");
-            String path1 = zk.create(PREFIX, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-            log.info("success create znode:{}", path1);
-            String path2 = zk.create(PREFIX, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
-            log.info("success create znode:{}", path2);
-            zk.close();
+            zk.create(PREFIX_ASYNC, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL,
+                    new ZkCallback(), "my test text...1");
+            zk.create(PREFIX_ASYNC, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL,
+                    new ZkCallback(), "my test text...2");
+            zk.create(PREFIX_ASYNC, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL,
+                    new ZkCallback(), "my test text...3");
+            Thread.sleep(Integer.MAX_VALUE);
         } catch (Exception e) {
             log.error("创建zk连接发生异常：{}",e);
         }
