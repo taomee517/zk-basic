@@ -19,7 +19,7 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class ZkNodeSyncDelete {
     private static final String ZK_ADDR = "127.0.0.1:2181";
-    private static final String PREFIX_DELETE = "/deleteTest";
+    private static final String PREFIX_DELETE = "/delete_sync";
 
     /**
      * 如果节点下有子节点，不能直接删除，必须在删除子节点后才能删除

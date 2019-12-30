@@ -20,7 +20,7 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class ZkChildrenAsyncGet {
     private static final String ZK_ADDR = "127.0.0.1:2181";
-    private static final String PREFIX_CHILDREN = "/parent";
+    private static final String PREFIX_CHILDREN = "/children_get_async";
 
     /**
      * 如果节点下有子节点，不能直接删除，必须在删除子节点后才能删除

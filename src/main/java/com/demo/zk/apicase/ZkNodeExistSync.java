@@ -14,7 +14,7 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class ZkNodeExistSync {
     private static final String ZK_ADDR = "127.0.0.1:2181";
-    private static final String PREFIX_EXIST= "/existTest";
+    private static final String PREFIX_EXIST= "/exist_sync";
 
     public static void main(String[] args) throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(1);

@@ -19,7 +19,7 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class ZkSyncConnect {
     private static final String ZK_ADDR = "127.0.0.1:2181";
-    private static final String PREFIX = "/zktest-sync-create-";
+    private static final String PREFIX = "/connect_sync";
 
     public static void main(String[] args) {
         try {

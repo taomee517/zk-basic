@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class ZkAsyncDataChange {
     private static final String ZK_ADDR = "127.0.0.1:2181";
-    private static final String PREFIX_DATA_CHANGE = "/dataChange";
+    private static final String PREFIX_DATA_CHANGE = "/data_change_async";
     private  static final Stat stat = new Stat();
 
     /**

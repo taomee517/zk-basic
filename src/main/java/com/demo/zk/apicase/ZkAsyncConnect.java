@@ -20,7 +20,7 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class ZkAsyncConnect {
     private static final String ZK_ADDR = "127.0.0.1:2181";
-    private static final String PREFIX_ASYNC = "/zktest-async-create-";
+    private static final String PREFIX_ASYNC = "/connect_async";
 
     public static void main(String[] args) {
         try {
