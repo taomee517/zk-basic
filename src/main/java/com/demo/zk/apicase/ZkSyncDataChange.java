@@ -39,8 +39,8 @@ public class ZkSyncDataChange {
             countDownLatch.await();
             log.info("zk连接创建成功！");
             zk.create(PREFIX_DATA_CHANGE, "origin data".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-            System.out.println("the data of node:" + new String(zk.getData(PREFIX_DATA_CHANGE, true, stat)));
-            System.out.println("czxid::"+stat.getCzxid()+",mzxid::" + stat.getMzxid() + ",version::" +  stat.getVersion());
+            log.info("the data of node:" + new String(zk.getData(PREFIX_DATA_CHANGE, true, stat)));
+            log.info("czxid::"+stat.getCzxid()+",mzxid::" + stat.getMzxid() + ",version::" +  stat.getVersion());
             zk.setData(PREFIX_DATA_CHANGE, "data changed".getBytes(), -1);
             Thread.sleep(Integer.MAX_VALUE);
         } catch (Exception e) {

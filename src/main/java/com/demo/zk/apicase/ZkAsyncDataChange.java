@@ -1,15 +1,17 @@
 package com.demo.zk.apicase;
 
-import com.demo.zk.watcher.ZkWathcer;
+import com.demo.zk.callback.ZkStatCallBack;
+import com.demo.zk.watcher.ZkDataChangeWatcher;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
 
 import java.util.concurrent.CountDownLatch;
 
 /**
- * 创建zk连接
+ * 节点数据变更
  *
  * @Author luotao
  * @E-mail taomee517@qq.com
@@ -17,9 +19,10 @@ import java.util.concurrent.CountDownLatch;
  */
 
 @Slf4j
-public class ZkNodeSyncDelete {
+public class ZkAsyncDataChange {
     private static final String ZK_ADDR = "127.0.0.1:2181";
-    private static final String PREFIX_DELETE = "/deleteTest";
+    private static final String PREFIX_DATA_CHANGE = "/dataChange";
+    private  static final Stat stat = new Stat();
 
     /**
      * 如果节点下有子节点，不能直接删除，必须在删除子节点后才能删除
@@ -28,21 +31,15 @@ public class ZkNodeSyncDelete {
     public static void main(String[] args) {
         try {
             CountDownLatch countDownLatch = new CountDownLatch(1);
-            ZooKeeper zk = new ZooKeeper(ZK_ADDR,5000,new ZkWathcer(countDownLatch));
+            ZkDataChangeWatcher watcher = new ZkDataChangeWatcher(countDownLatch);
+            watcher.setStat(stat);
+            ZooKeeper zk = new ZooKeeper(ZK_ADDR,5000,watcher);
+            watcher.setZk(zk);
             log.info("zk连接状态：{}",zk.getState());
             countDownLatch.await();
             log.info("zk连接创建成功！");
-            zk.create(PREFIX_DELETE, "parentNode".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            zk.create(PREFIX_DELETE + "/child", "childNode".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            try {
-                zk.delete(PREFIX_DELETE,-1);
-            } catch (Exception e) {
-                log.info("删除节点{}失败：{}",PREFIX_DELETE,e);
-            }
-            zk.delete(PREFIX_DELETE + "/child",-1);
-            log.info("success to delete node /child");
-            zk.delete(PREFIX_DELETE,-1);
-            log.info("success to delete node {}",PREFIX_DELETE);
+            zk.create(PREFIX_DATA_CHANGE, "origin data".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+            zk.setData(PREFIX_DATA_CHANGE, "data changed".getBytes(), -1,new ZkStatCallBack(),"data change ctx");
             Thread.sleep(Integer.MAX_VALUE);
         } catch (Exception e) {
             log.error("创建zk连接发生异常：{}",e);

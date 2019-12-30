@@ -1,6 +1,6 @@
 package com.demo.zk.apicase;
 
-import com.demo.zk.callback.ZkCallback;
+import com.demo.zk.callback.ZkStringCallback;
 import com.demo.zk.watcher.ZkWathcer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
@@ -30,11 +30,11 @@ public class ZkAsyncConnect {
             countDownLatch.await();
             log.info("zk连接创建成功！");
             zk.create(PREFIX_ASYNC, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL,
-                    new ZkCallback(), "my test text...1");
+                    new ZkStringCallback(), "my test text...1");
             zk.create(PREFIX_ASYNC, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL,
-                    new ZkCallback(), "my test text...2");
+                    new ZkStringCallback(), "my test text...2");
             zk.create(PREFIX_ASYNC, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL,
-                    new ZkCallback(), "my test text...3");
+                    new ZkStringCallback(), "my test text...3");
             Thread.sleep(Integer.MAX_VALUE);
         } catch (Exception e) {
             log.error("创建zk连接发生异常：{}",e);
